@@ -28,18 +28,23 @@ export class HospitalService {
 
     if (isSupabaseConfigured && supabaseAdmin) {
       try {
-        const { data, error } = await supabaseAdmin
-          .from('hospitals')
-          .select('*')
-          .order('distance_km', { ascending: true });
+        // 3-second timeout guard — wrap in Promise.resolve() since Supabase returns PromiseLike
+        const timeoutPromise = new Promise<{ data: null; error: Error }>((resolve) =>
+          setTimeout(() => resolve({ data: null, error: new Error('timeout') }), 3000)
+        );
+        const queryPromise = Promise.resolve(
+          supabaseAdmin.from('hospitals').select('*').order('name', { ascending: true })
+        ).catch((err: Error) => ({ data: null as any, error: err }));
 
-        if (error) {
-          console.warn('Supabase hospitals query error, falling back to runtime store:', error.message);
+        const { data, error } = await Promise.race([queryPromise, timeoutPromise]);
+
+        if (error || !data || (data as unknown[]).length === 0) {
+          if (error && error.message !== 'timeout') {
+            console.warn('Supabase hospitals query error, falling back to runtime store:', error.message);
+          }
           hospitals = runtimeHospitals;
-        } else if (data && data.length > 0) {
-          hospitals = data as HospitalRecord[];
         } else {
-          hospitals = runtimeHospitals;
+          hospitals = data as unknown as HospitalRecord[];
         }
       } catch (err) {
         console.warn('Supabase hospitals fetch exception, using runtime fallback:', err);
