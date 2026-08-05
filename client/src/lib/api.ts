@@ -12,7 +12,7 @@ import {
   BedBookingPayload,
 } from '../types';
 
-const API_BASE = '/api';
+export const API_BASE = (import.meta.env.VITE_API_URL ? String(import.meta.env.VITE_API_URL).replace(/\/$/, '') : '') + '/api';
 
 export async function createWorkflowApi(payload: {
   clinicalCase: string;

@@ -18,6 +18,7 @@ import {
 import { UserProfile, UserRole } from '../types';
 import { getStoredAuthUser, clearStoredAuthUser, switchRole, getRoleDashboardPath } from '../lib/supabase';
 import { BrandLogo } from './BrandLogo';
+import { API_BASE } from '../lib/api';
 
 export const Navbar: React.FC = () => {
   const location = useLocation();
@@ -28,7 +29,7 @@ export const Navbar: React.FC = () => {
 
   useEffect(() => {
     // Ping healthcheck
-    fetch('/api/health')
+    fetch(`${API_BASE}/health`)
       .then((res) => res.json())
       .then((data) => setSystemOnline(data.status === 'healthy'))
       .catch(() => setSystemOnline(false));

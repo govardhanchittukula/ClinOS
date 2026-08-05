@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { Activity, ArrowLeft, RefreshCw, CheckCircle2, ShieldAlert, Cpu } from 'lucide-react';
 import { ClinicalWorkflow, AgentLog, AgentRole } from '../types';
-import { getSingleWorkflowApi, cancelWorkflowApi } from '../lib/api';
+import { getSingleWorkflowApi, cancelWorkflowApi, API_BASE } from '../lib/api';
 import { AgentNetworkGraph } from '../components/AgentNetworkGraph';
 import { ThoughtStreamTerminal } from '../components/ThoughtStreamTerminal';
 import { ClinicalOutputRenderer } from '../components/ClinicalOutputRenderer';
@@ -15,6 +15,7 @@ import { BedType } from '../types';
 
 export const WorkflowExecutionPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
+
   const [workflow, setWorkflow] = useState<ClinicalWorkflow | null>(null);
   const [logs, setLogs] = useState<AgentLog[]>([]);
   const [activeAgent, setActiveAgent] = useState<AgentRole>('planner');
@@ -39,7 +40,7 @@ export const WorkflowExecutionPage: React.FC = () => {
   useEffect(() => {
     if (!id) return;
 
-    const eventSource = new EventSource(`/api/workflows/${id}/stream`);
+    const eventSource = new EventSource(`${API_BASE}/workflows/${id}/stream`);
 
     eventSource.onmessage = (event) => {
       try {
