@@ -1,30 +1,40 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Activity, Brain, Search, ShieldCheck, FileCheck, ArrowRight, CheckCircle2, ShieldAlert, Cpu, Sparkles, Stethoscope } from 'lucide-react';
+import { Activity, Brain, Search, ShieldCheck, FileCheck, ArrowRight, CheckCircle2, ShieldAlert, Cpu, Sparkles, Stethoscope, FileText, Zap, HeartPulse } from 'lucide-react';
 import { MedicalDisclaimerBanner } from '../components/MedicalDisclaimerBanner';
+import { BrandLogo } from '../components/BrandLogo';
 
 export const LandingPage: React.FC = () => {
   return (
-    <div className="min-h-screen flex flex-col bg-[#0b0f19]">
+    <div className="min-h-screen flex flex-col bg-slate-50 text-slate-900">
       <MedicalDisclaimerBanner />
 
       {/* Hero Section */}
-      <section className="relative pt-20 pb-24 px-4 sm:px-6 lg:px-8 overflow-hidden">
+      <section className="relative pt-16 pb-24 px-4 sm:px-6 lg:px-8 overflow-hidden">
         
-        {/* Ambient Glow Backdrops */}
-        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[350px] bg-gradient-to-tr from-cyan-500/15 via-teal-500/10 to-emerald-500/15 blur-[120px] rounded-full pointer-events-none" />
+        {/* Ambient Medical Blue & Teal Glow */}
+        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[400px] bg-gradient-to-tr from-blue-400/15 via-teal-400/10 to-emerald-400/15 blur-[120px] rounded-full pointer-events-none" />
 
-        <div className="max-w-6xl mx-auto text-center relative z-10">
+        <div className="max-w-6xl mx-auto text-center relative z-10 flex flex-col items-center">
           
+          {/* Hero Brand Logo */}
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="mb-8"
+          >
+            <BrandLogo size="lg" />
+          </motion.div>
+
           {/* Top Pill */}
           <motion.div
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
-            className="inline-flex items-center space-x-2 px-3.5 py-1.5 rounded-full bg-cyan-950/80 border border-cyan-500/40 text-cyan-300 text-xs font-mono mb-8 shadow-lg shadow-cyan-500/10"
+            className="inline-flex items-center space-x-2 px-4 py-1.5 rounded-full bg-blue-50 border border-blue-200 text-blue-700 text-xs font-mono mb-8 shadow-sm"
           >
-            <Sparkles className="w-3.5 h-3.5 text-cyan-400 animate-pulse" />
-            <span>Next-Generation Multi-Agent Healthcare Intelligence</span>
+            <Sparkles className="w-3.5 h-3.5 text-blue-600 animate-pulse" />
+            <span className="font-semibold">Next-Generation Multi-Agent Clinical Intelligence</span>
           </motion.div>
 
           {/* Main Title */}
@@ -32,10 +42,10 @@ export const LandingPage: React.FC = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
-            className="text-4xl sm:text-6xl lg:text-7xl font-extrabold tracking-tight text-slate-100 max-w-4xl mx-auto leading-none"
+            className="text-4xl sm:text-6xl lg:text-7xl font-extrabold tracking-tight text-slate-900 max-w-4xl mx-auto leading-[1.1]"
           >
             Beyond Chatbots.{' '}
-            <span className="bg-gradient-to-r from-cyan-400 via-teal-300 to-emerald-400 bg-clip-text text-transparent">
+            <span className="bg-gradient-to-r from-blue-600 via-teal-600 to-emerald-600 bg-clip-text text-transparent">
               Autonomous AI Clinical Board.
             </span>
           </motion.h1>
@@ -44,9 +54,9 @@ export const LandingPage: React.FC = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
-            className="mt-6 text-lg sm:text-xl text-slate-400 max-w-3xl mx-auto font-normal leading-relaxed"
+            className="mt-6 text-lg sm:text-xl text-slate-600 max-w-3xl mx-auto font-normal leading-relaxed"
           >
-            ClinOS orchestrates specialized AI agents (Planner, Researcher, Medical Critic, Synthesizer) to analyze raw patient symptoms, perform differential diagnostics, self-correct clinical hallucinations, and compile production-grade triage care plans.
+            ClinOS orchestrates specialized AI agents (Planner, Researcher, Medical Critic, Synthesizer) to analyze patient symptoms, perform differential diagnostics, audit clinical safety, and compile production-grade triage care plans.
           </motion.p>
 
           {/* CTA Buttons */}
@@ -58,7 +68,7 @@ export const LandingPage: React.FC = () => {
           >
             <Link
               to="/workflows/new"
-              className="w-full sm:w-auto px-8 py-4 rounded-xl bg-gradient-to-r from-cyan-500 via-teal-500 to-emerald-500 hover:from-cyan-400 hover:to-emerald-400 text-slate-950 font-extrabold text-base tracking-wide shadow-xl shadow-cyan-500/25 transition-all flex items-center justify-center space-x-2 group"
+              className="w-full sm:w-auto px-8 py-4 rounded-xl bg-gradient-to-r from-blue-600 via-teal-600 to-emerald-600 hover:from-blue-700 hover:to-emerald-700 text-white font-extrabold text-base tracking-wide shadow-xl shadow-blue-500/20 transition-all flex items-center justify-center space-x-2 group"
             >
               <span>Launch Clinical Case Intake</span>
               <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
@@ -66,124 +76,154 @@ export const LandingPage: React.FC = () => {
 
             <Link
               to="/dashboard"
-              className="w-full sm:w-auto px-8 py-4 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-700 text-slate-200 font-bold text-base transition-all flex items-center justify-center space-x-2"
+              className="w-full sm:w-auto px-8 py-4 rounded-xl bg-white hover:bg-slate-50 border border-slate-300 text-slate-700 font-bold text-base shadow-sm transition-all flex items-center justify-center space-x-2"
             >
-              <Cpu className="w-5 h-5 text-cyan-400" />
-              <span>Explore Dashboard</span>
+              <Cpu className="w-5 h-5 text-blue-600" />
+              <span>Physician Dashboard</span>
             </Link>
           </motion.div>
 
         </div>
       </section>
 
-      {/* Interactive Multi-Agent Pipeline Feature Section */}
-      <section className="py-16 px-4 sm:px-6 lg:px-8 bg-slate-900/40 border-y border-slate-850">
-        <div className="max-w-7xl mx-auto">
+      {/* 4 Multi-Agent Architecture Section */}
+      <section className="py-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto w-full">
+        <div className="text-center max-w-3xl mx-auto mb-16">
+          <h2 className="text-xs font-mono font-bold uppercase tracking-wider text-blue-600 mb-2">
+            The ClinOS Multi-Agent Pipeline
+          </h2>
+          <p className="text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight">
+            Four Specialized Agents. Zero Unchecked Hallucinations.
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           
-          <div className="text-center max-w-3xl mx-auto mb-16">
-            <h2 className="text-xs font-bold uppercase tracking-widest text-cyan-400 mb-2">
-              4-Stage Multi-Agent State Machine
-            </h2>
-            <p className="text-2xl sm:text-4xl font-extrabold text-slate-100">
-              Autonomous Collaboration & Self-Correction
-            </p>
-            <p className="mt-3 text-slate-400 text-sm">
-              Each specialized agent runs dedicated prompts and strict JSON schema validations powered by Gemini 2.5 Flash.
+          {/* Agent 1 */}
+          <div className="p-6 rounded-2xl bg-white border border-slate-200 shadow-sm hover:shadow-md hover:border-blue-300 transition-all group">
+            <div className="w-12 h-12 rounded-xl bg-blue-50 border border-blue-200 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+              <Brain className="w-6 h-6 text-blue-600" />
+            </div>
+            <div className="flex items-center space-x-2 mb-2">
+              <span className="text-xs font-mono font-bold text-blue-600">AGENT 01</span>
+              <span className="text-xs text-slate-400">•</span>
+              <span className="text-xs text-slate-500 font-semibold">Triaging</span>
+            </div>
+            <h3 className="text-lg font-bold text-slate-900 mb-2">Triage Planner</h3>
+            <p className="text-xs text-slate-600 leading-relaxed">
+              Decomposes unstructured symptoms, patient history, and vital signs into a structured clinical execution graph with assigned urgency.
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-            
-            {/* Agent 1 */}
-            <div className="p-6 rounded-2xl bg-slate-900 border border-slate-800 hover:border-blue-500/50 transition-all group">
-              <div className="w-12 h-12 rounded-xl bg-blue-950 text-blue-400 border border-blue-800 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
-                <Brain className="w-6 h-6" />
-              </div>
-              <span className="text-[10px] font-mono text-blue-400 font-bold uppercase tracking-wider block mb-1">
-                Node 01
-              </span>
-              <h3 className="text-lg font-bold text-slate-100 mb-2">Triage Planner</h3>
-              <p className="text-slate-400 text-xs leading-relaxed">
-                Decomposes unstructured symptoms, vitals, and chief complaints into an execution plan.
-              </p>
+          {/* Agent 2 */}
+          <div className="p-6 rounded-2xl bg-white border border-slate-200 shadow-sm hover:shadow-md hover:border-teal-300 transition-all group">
+            <div className="w-12 h-12 rounded-xl bg-teal-50 border border-teal-200 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+              <Search className="w-6 h-6 text-teal-600" />
             </div>
-
-            {/* Agent 2 */}
-            <div className="p-6 rounded-2xl bg-slate-900 border border-slate-800 hover:border-cyan-500/50 transition-all group">
-              <div className="w-12 h-12 rounded-xl bg-cyan-950 text-cyan-400 border border-cyan-800 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
-                <Search className="w-6 h-6" />
-              </div>
-              <span className="text-[10px] font-mono text-cyan-400 font-bold uppercase tracking-wider block mb-1">
-                Node 02
-              </span>
-              <h3 className="text-lg font-bold text-slate-100 mb-2">Clinical Researcher</h3>
-              <p className="text-slate-400 text-xs leading-relaxed">
-                Ranks differential diagnoses, pinpoints potential red-flag symptoms, and proposes lab/imaging workups.
-              </p>
+            <div className="flex items-center space-x-2 mb-2">
+              <span className="text-xs font-mono font-bold text-teal-600">AGENT 02</span>
+              <span className="text-xs text-slate-400">•</span>
+              <span className="text-xs text-slate-500 font-semibold">Diagnosis</span>
             </div>
-
-            {/* Agent 3 */}
-            <div className="p-6 rounded-2xl bg-slate-900 border border-slate-800 hover:border-amber-500/50 transition-all group">
-              <div className="w-12 h-12 rounded-xl bg-amber-950 text-amber-400 border border-amber-800 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
-                <ShieldCheck className="w-6 h-6" />
-              </div>
-              <span className="text-[10px] font-mono text-amber-400 font-bold uppercase tracking-wider block mb-1">
-                Node 03 (Interceptor)
-              </span>
-              <h3 className="text-lg font-bold text-slate-100 mb-2">Medical Critic</h3>
-              <p className="text-slate-400 text-xs leading-relaxed">
-                Audits researcher findings for safety guardrails. If dangerous gaps are found, it triggers a forced retry loop.
-              </p>
-            </div>
-
-            {/* Agent 4 */}
-            <div className="p-6 rounded-2xl bg-slate-900 border border-slate-800 hover:border-emerald-500/50 transition-all group">
-              <div className="w-12 h-12 rounded-xl bg-emerald-950 text-emerald-400 border border-emerald-800 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
-                <FileCheck className="w-6 h-6" />
-              </div>
-              <span className="text-[10px] font-mono text-emerald-400 font-bold uppercase tracking-wider block mb-1">
-                Node 04
-              </span>
-              <h3 className="text-lg font-bold text-slate-100 mb-2">Care Synthesizer</h3>
-              <p className="text-slate-400 text-xs leading-relaxed">
-                Compiles validated clinical findings into an executive report with embedded non-removable disclaimers.
-              </p>
-            </div>
-
+            <h3 className="text-lg font-bold text-slate-900 mb-2">Clinical Researcher</h3>
+            <p className="text-xs text-slate-600 leading-relaxed">
+              Fetches evidence-based differential diagnoses, clinical red flags, and diagnostic criteria from medical knowledge graphs.
+            </p>
           </div>
+
+          {/* Agent 3 - The Critic */}
+          <div className="p-6 rounded-2xl bg-white border-2 border-amber-300 shadow-sm hover:shadow-md hover:border-amber-400 transition-all group relative">
+            <div className="absolute -top-3 right-4 px-2.5 py-0.5 rounded-full bg-amber-100 border border-amber-300 text-[10px] font-mono font-bold text-amber-800">
+              HALLUCINATION GUARD
+            </div>
+            <div className="w-12 h-12 rounded-xl bg-amber-50 border border-amber-200 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+              <ShieldCheck className="w-6 h-6 text-amber-600" />
+            </div>
+            <div className="flex items-center space-x-2 mb-2">
+              <span className="text-xs font-mono font-bold text-amber-600">AGENT 03</span>
+              <span className="text-xs text-slate-400">•</span>
+              <span className="text-xs text-slate-500 font-semibold">Safety Audit</span>
+            </div>
+            <h3 className="text-lg font-bold text-slate-900 mb-2">Medical Critic</h3>
+            <p className="text-xs text-slate-600 leading-relaxed">
+              Audits diagnostic reasoning. If contraindications or missing red flags are detected, it <strong>rejects the hypothesis</strong> and triggers autonomous self-correction.
+            </p>
+          </div>
+
+          {/* Agent 4 */}
+          <div className="p-6 rounded-2xl bg-white border border-slate-200 shadow-sm hover:shadow-md hover:border-emerald-300 transition-all group">
+            <div className="w-12 h-12 rounded-xl bg-emerald-50 border border-emerald-200 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+              <FileCheck className="w-6 h-6 text-emerald-600" />
+            </div>
+            <div className="flex items-center space-x-2 mb-2">
+              <span className="text-xs font-mono font-bold text-emerald-600">AGENT 04</span>
+              <span className="text-xs text-slate-400">•</span>
+              <span className="text-xs text-slate-500 font-semibold">Synthesis</span>
+            </div>
+            <h3 className="text-lg font-bold text-slate-900 mb-2">Care Synthesizer</h3>
+            <p className="text-xs text-slate-600 leading-relaxed">
+              Assembles verified differential hypotheses, recommended diagnostic workups, and red flags into EHR-ready medical summaries.
+            </p>
+          </div>
+
         </div>
       </section>
 
-      {/* Target Clinical Domains */}
-      <section className="py-16 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-7xl mx-auto">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div className="p-6 rounded-2xl bg-slate-900/60 border border-slate-800">
-              <Stethoscope className="w-8 h-8 text-cyan-400 mb-4" />
-              <h3 className="text-base font-bold text-slate-100 mb-2">Diagnostic Triage</h3>
-              <p className="text-xs text-slate-400 leading-relaxed">
-                Sorts complex symptom clusters by clinical urgency, risk factors, and vital instability.
-              </p>
+      {/* Clinical Feature Matrix */}
+      <section className="py-16 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto w-full border-t border-slate-200">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          
+          <div className="flex items-start space-x-4 p-6 rounded-2xl bg-white border border-slate-200 shadow-sm">
+            <div className="p-3 rounded-xl bg-blue-50 text-blue-600 border border-blue-100 shrink-0">
+              <HeartPulse className="w-6 h-6" />
             </div>
-
-            <div className="p-6 rounded-2xl bg-slate-900/60 border border-slate-800">
-              <Activity className="w-8 h-8 text-emerald-400 mb-4" />
-              <h3 className="text-base font-bold text-slate-100 mb-2">Differential Prioritization</h3>
-              <p className="text-xs text-slate-400 leading-relaxed">
-                Calculates weighted probability vectors for primary and alternative pathologies based on patient history.
-              </p>
-            </div>
-
-            <div className="p-6 rounded-2xl bg-slate-900/60 border border-slate-800">
-              <ShieldAlert className="w-8 h-8 text-amber-400 mb-4" />
-              <h3 className="text-base font-bold text-slate-100 mb-2">Self-Correcting Guardrails</h3>
-              <p className="text-xs text-slate-400 leading-relaxed">
-                Protects against hallucinated clinical facts or omitted red-flag surgical emergencies.
+            <div>
+              <h4 className="font-bold text-slate-900 mb-1">Pre-Hospital Triage</h4>
+              <p className="text-xs text-slate-600 leading-relaxed">
+                Computes standardized ESI (Emergency Severity Index) triage urgency ratings with explicit risk stratification.
               </p>
             </div>
           </div>
+
+          <div className="flex items-start space-x-4 p-6 rounded-2xl bg-white border border-slate-200 shadow-sm">
+            <div className="p-3 rounded-xl bg-teal-50 text-teal-600 border border-teal-100 shrink-0">
+              <Zap className="w-6 h-6" />
+            </div>
+            <div>
+              <h4 className="font-bold text-slate-900 mb-1">Real-Time SSE Streaming</h4>
+              <p className="text-xs text-slate-600 leading-relaxed">
+                Watch agent thoughts, iterative critic evaluations, and reasoning updates stream live via Server-Sent Events.
+              </p>
+            </div>
+          </div>
+
+          <div className="flex items-start space-x-4 p-6 rounded-2xl bg-white border border-slate-200 shadow-sm">
+            <div className="p-3 rounded-xl bg-emerald-50 text-emerald-600 border border-emerald-100 shrink-0">
+              <ShieldAlert className="w-6 h-6" />
+            </div>
+            <div>
+              <h4 className="font-bold text-slate-900 mb-1">Clinical Safety Safeguards</h4>
+              <p className="text-xs text-slate-600 leading-relaxed">
+                Strict medical disclaimers, critic-driven iteration gates, and audit trails safeguard patient decision support.
+              </p>
+            </div>
+          </div>
+
         </div>
       </section>
+
+      {/* Footer */}
+      <footer className="mt-auto border-t border-slate-200 py-8 px-4 sm:px-6 lg:px-8 bg-white">
+        <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-500">
+          <div className="flex items-center space-x-2">
+            <BrandLogo size="sm" showText={false} />
+            <span>ClinOS v2.5 PRO • Multi-Agent Clinical Decision Support</span>
+          </div>
+          <div className="font-mono text-[11px] text-slate-400">
+            Designed for Clinical Decision Support • ISO-13485 Boundary
+          </div>
+        </div>
+      </footer>
 
     </div>
   );

@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Play, Sparkles, Sliders, ShieldCheck, FileCode, CheckCircle2, Stethoscope } from 'lucide-react';
+import React, { useState, useRef } from 'react';
+import { Play, Sparkles, Sliders, ShieldCheck, FileCode, CheckCircle2, Stethoscope, Upload, FileText, Activity } from 'lucide-react';
 import { WorkflowConfiguration, ComplexityLevel, OutputFormat } from '../types';
 
 interface Props {
@@ -34,6 +34,21 @@ export const WorkflowConfigForm: React.FC<Props> = ({ onSubmit, isLoading = fals
   const [enableCritic, setEnableCritic] = useState<boolean>(true);
   const [outputFormat, setOutputFormat] = useState<OutputFormat>('Markdown');
   const [temperature, setTemperature] = useState<number>(0.1);
+  const [uploadedFileName, setUploadedFileName] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setUploadedFileName(file.name);
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const text = event.target?.result as string;
+      if (text) setClinicalCase(text);
+    };
+    reader.readAsText(file);
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -53,25 +68,25 @@ export const WorkflowConfigForm: React.FC<Props> = ({ onSubmit, isLoading = fals
       {/* Sample Preset Case Selector */}
       <div>
         <div className="flex items-center justify-between mb-2">
-          <label className="text-xs font-semibold uppercase tracking-wider text-slate-300 flex items-center space-x-1.5">
-            <Stethoscope className="w-3.5 h-3.5 text-cyan-400" />
+          <label className="text-xs font-semibold uppercase tracking-wider text-slate-700 flex items-center space-x-1.5">
+            <Stethoscope className="w-3.5 h-3.5 text-blue-600" />
             <span>Preset Patient Clinical Scenarios</span>
           </label>
-          <span className="text-[11px] text-slate-400">Click to auto-populate</span>
+          <span className="text-[11px] text-slate-500">Click to auto-populate</span>
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-2.5">
           {SAMPLE_CASES.map((sample, idx) => (
             <button
               key={idx}
               type="button"
               onClick={() => setClinicalCase(sample.text)}
-              className="p-3 text-left rounded-xl bg-slate-900/80 border border-slate-800 hover:border-cyan-500/50 hover:bg-slate-850 transition-all text-xs group"
+              className="p-3 text-left rounded-xl bg-slate-50 border border-slate-200 hover:border-blue-300 hover:bg-blue-50/50 transition-all text-xs group"
             >
-              <div className="font-semibold text-slate-200 group-hover:text-cyan-300 flex items-center justify-between mb-1">
+              <div className="font-semibold text-slate-800 group-hover:text-blue-600 flex items-center justify-between mb-1">
                 <span>{sample.title}</span>
-                <Sparkles className="w-3 h-3 text-cyan-400 opacity-0 group-hover:opacity-100 transition-opacity" />
+                <Sparkles className="w-3 h-3 text-blue-600 opacity-0 group-hover:opacity-100 transition-opacity" />
               </div>
-              <p className="text-slate-400 line-clamp-2 text-[11px] leading-relaxed">
+              <p className="text-slate-500 line-clamp-2 text-[11px] leading-relaxed">
                 {sample.text}
               </p>
             </button>
@@ -79,148 +94,151 @@ export const WorkflowConfigForm: React.FC<Props> = ({ onSubmit, isLoading = fals
         </div>
       </div>
 
-      {/* Clinical Case Intake Textarea */}
+      {/* Clinical Case Intake Textarea & File Upload */}
       <div className="space-y-2">
-        <label htmlFor="clinicalCase" className="block text-xs font-semibold uppercase tracking-wider text-slate-300">
-          Patient Symptoms, Vitals & Medical History <span className="text-rose-400">*</span>
-        </label>
-        <textarea
-          id="clinicalCase"
-          rows={6}
-          value={clinicalCase}
-          onChange={(e) => setClinicalCase(e.target.value)}
-          placeholder="Enter chief complaint, vital signs (BP, HR, SpO2, Temp), symptom timeline, physical examination findings, and past medical history..."
-          className="w-full rounded-xl bg-slate-950/80 border border-slate-800 focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 text-sm p-4 text-slate-100 placeholder:text-slate-500 font-mono leading-relaxed transition-all"
-          required
-        />
-        <div className="flex items-center justify-between text-[11px] text-slate-400 px-1">
-          <span>Minimum 10 characters required. Treated as confidential PHI simulation.</span>
-          <span className="font-mono">{clinicalCase.length} / 3000 chars</span>
+        <div className="flex items-center justify-between flex-wrap gap-2">
+          <label htmlFor="clinicalCase" className="block text-xs font-semibold uppercase tracking-wider text-slate-700">
+            Unstructured Patient Clinical Notes & Symptoms
+          </label>
+          
+          <div className="flex items-center space-x-2">
+            <input
+              type="file"
+              ref={fileInputRef}
+              onChange={handleFileUpload}
+              accept=".txt,.pdf,.docx,.json"
+              className="hidden"
+            />
+            <button
+              type="button"
+              onClick={() => fileInputRef.current?.click()}
+              className="flex items-center space-x-1 px-3 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-200 text-[11px] font-medium transition-all"
+            >
+              <Upload className="w-3 h-3 text-blue-600" />
+              <span>{uploadedFileName ? `Loaded: ${uploadedFileName.slice(0, 15)}...` : 'Upload Lab / Report'}</span>
+            </button>
+          </div>
         </div>
+
+        <div className="relative">
+          <textarea
+            id="clinicalCase"
+            rows={5}
+            value={clinicalCase}
+            onChange={(e) => setClinicalCase(e.target.value)}
+            placeholder="e.g. 45-year-old male with migrating RLQ abdominal pain, fever (38.1°C), and vomiting..."
+            className="w-full rounded-2xl bg-slate-50 border border-slate-200 p-4 text-xs font-mono text-slate-900 focus:bg-white focus:border-blue-500 focus:ring-2 focus:ring-blue-100 focus:outline-none transition-all leading-relaxed"
+            required
+          />
+        </div>
+        <p className="text-[11px] text-slate-500 flex items-center space-x-1">
+          <FileText className="w-3.5 h-3.5 text-blue-600" />
+          <span>Supports unstructured physician dictation, EHR triage notes, or patient symptom descriptions.</span>
+        </p>
       </div>
 
-      {/* Multi-Agent Orchestration Parameters Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-5 rounded-2xl bg-slate-900/60 border border-slate-800">
+      {/* Workflow Controls Grid */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-2">
         
-        {/* Case Complexity */}
-        <div className="space-y-2">
-          <label className="block text-xs font-semibold uppercase tracking-wider text-slate-300 flex items-center space-x-1.5">
-            <Sliders className="w-3.5 h-3.5 text-cyan-400" />
-            <span>Case Complexity Protocol</span>
+        {/* Complexity Level */}
+        <div>
+          <label className="block text-xs font-semibold uppercase tracking-wider text-slate-700 mb-2">
+            Diagnostic Depth
           </label>
-          <div className="grid grid-cols-3 gap-2">
-            {(['Routine', 'Complex', 'Deep Dive'] as ComplexityLevel[]).map((level) => (
+          <div className="grid grid-cols-3 gap-1.5 p-1 bg-slate-100 rounded-xl border border-slate-200">
+            {(['Simple', 'Medium', 'Complex'] as ComplexityLevel[]).map((level) => (
               <button
                 key={level}
                 type="button"
                 onClick={() => setComplexity(level)}
-                className={`py-2 px-3 rounded-lg text-xs font-medium border transition-all ${
+                className={`py-2 rounded-lg text-xs font-semibold transition-all ${
                   complexity === level
-                    ? 'bg-cyan-500/20 text-cyan-300 border-cyan-500/60 shadow-sm'
-                    : 'bg-slate-950/60 text-slate-400 border-slate-800 hover:text-slate-200'
+                    ? 'bg-white text-blue-700 shadow-sm border border-slate-200/80 font-bold'
+                    : 'text-slate-600 hover:text-slate-900'
                 }`}
               >
                 {level}
               </button>
             ))}
           </div>
-          <p className="text-[11px] text-slate-400">
-            {complexity === 'Routine' && 'Standard 1-2 evaluation cycles.'}
-            {complexity === 'Complex' && 'Multi-system 3-5 iteration reasoning & cross-checks.'}
-            {complexity === 'Deep Dive' && 'Exhaustive differential search with deep risk scoring.'}
-          </p>
-        </div>
-
-        {/* Clinical Strictness Temperature */}
-        <div className="space-y-2">
-          <div className="flex items-center justify-between">
-            <label className="block text-xs font-semibold uppercase tracking-wider text-slate-300">
-              Clinical Temperature ({temperature.toFixed(2)})
-            </label>
-            <span className="text-[10px] font-mono text-cyan-400">
-              {temperature === 0 ? 'Strict Guideline' : 'Broader Differential'}
-            </span>
-          </div>
-          <input
-            type="range"
-            min="0"
-            max="0.4"
-            step="0.05"
-            value={temperature}
-            onChange={(e) => setTemperature(parseFloat(e.target.value))}
-            className="w-full accent-cyan-400 bg-slate-950 rounded-lg cursor-pointer h-2"
-          />
-          <div className="flex justify-between text-[10px] font-mono text-slate-500">
-            <span>0.0 (Strictly Conservative)</span>
-            <span>0.4 (Exploratory)</span>
-          </div>
-        </div>
-
-        {/* Medical Critic Toggle */}
-        <div className="space-y-2">
-          <label className="block text-xs font-semibold uppercase tracking-wider text-slate-300 flex items-center space-x-1.5">
-            <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
-            <span>Self-Correcting Critic Guardrail</span>
-          </label>
-          <div
-            onClick={() => setEnableCritic(!enableCritic)}
-            className={`cursor-pointer p-3 rounded-xl border flex items-center justify-between transition-all ${
-              enableCritic
-                ? 'bg-emerald-950/30 border-emerald-500/40 text-emerald-300'
-                : 'bg-slate-950/60 border-slate-800 text-slate-400'
-            }`}
-          >
-            <div className="flex items-center space-x-2.5 text-xs">
-              <CheckCircle2 className={`w-4 h-4 ${enableCritic ? 'text-emerald-400' : 'text-slate-600'}`} />
-              <div>
-                <span className="font-semibold block">Medical Critic Interceptor</span>
-                <span className="text-[11px] opacity-80">Catches missed red flags & forces auto-retries</span>
-              </div>
-            </div>
-            <span className="font-mono text-[10px] uppercase font-bold px-2 py-0.5 rounded bg-slate-900 border border-slate-700">
-              {enableCritic ? 'ACTIVE' : 'OFF'}
-            </span>
-          </div>
         </div>
 
         {/* Output Format */}
-        <div className="space-y-2">
-          <label className="block text-xs font-semibold uppercase tracking-wider text-slate-300 flex items-center space-x-1.5">
-            <FileCode className="w-3.5 h-3.5 text-purple-400" />
-            <span>Output Format</span>
+        <div>
+          <label className="block text-xs font-semibold uppercase tracking-wider text-slate-700 mb-2">
+            Output Format
           </label>
-          <div className="grid grid-cols-2 gap-2">
-            {(['Markdown', 'JSON'] as OutputFormat[]).map((fmt) => (
+          <div className="grid grid-cols-3 gap-1.5 p-1 bg-slate-100 rounded-xl border border-slate-200">
+            {(['Markdown', 'JSON', 'HL7-FHIR'] as OutputFormat[]).map((format) => (
               <button
-                key={fmt}
+                key={format}
                 type="button"
-                onClick={() => setOutputFormat(fmt)}
-                className={`py-2.5 px-3 rounded-lg text-xs font-medium border transition-all ${
-                  outputFormat === fmt
-                    ? 'bg-purple-500/20 text-purple-300 border-purple-500/60 shadow-sm'
-                    : 'bg-slate-950/60 text-slate-400 border-slate-800 hover:text-slate-200'
+                onClick={() => setOutputFormat(format)}
+                className={`py-2 rounded-lg text-xs font-semibold transition-all ${
+                  outputFormat === format
+                    ? 'bg-white text-blue-700 shadow-sm border border-slate-200/80 font-bold'
+                    : 'text-slate-600 hover:text-slate-900'
                 }`}
               >
-                {fmt}
+                {format}
               </button>
             ))}
           </div>
-          <p className="text-[11px] text-slate-400">
-            {outputFormat === 'Markdown' ? 'Formatted clinical triage assessment report.' : 'Structured machine-readable JSON schema.'}
-          </p>
+        </div>
+
+        {/* Hallucination Critic Switch */}
+        <div>
+          <label className="block text-xs font-semibold uppercase tracking-wider text-slate-700 mb-2">
+            Medical Critic Loop
+          </label>
+          <div
+            onClick={() => setEnableCritic(!enableCritic)}
+            className={`p-2.5 rounded-xl border cursor-pointer transition-all flex items-center justify-between ${
+              enableCritic
+                ? 'bg-amber-50 border-amber-300 text-amber-900'
+                : 'bg-slate-100 border-slate-200 text-slate-600'
+            }`}
+          >
+            <div className="flex items-center space-x-2">
+              <ShieldCheck className={`w-4 h-4 ${enableCritic ? 'text-amber-600' : 'text-slate-400'}`} />
+              <span className="text-xs font-bold">Critic Guard</span>
+            </div>
+            <div
+              className={`w-9 h-5 rounded-full transition-colors relative flex items-center ${
+                enableCritic ? 'bg-amber-500' : 'bg-slate-300'
+              }`}
+            >
+              <div
+                className={`w-4 h-4 rounded-full bg-white transition-transform ${
+                  enableCritic ? 'translate-x-4' : 'translate-x-0.5'
+                }`}
+              />
+            </div>
+          </div>
         </div>
 
       </div>
 
-      {/* Submit CTA Button */}
-      <button
-        type="submit"
-        disabled={isLoading || clinicalCase.length < 10}
-        className="w-full py-4 rounded-xl bg-gradient-to-r from-cyan-500 via-teal-500 to-emerald-500 hover:from-cyan-400 hover:to-emerald-400 text-slate-950 font-bold text-sm tracking-wide shadow-lg shadow-cyan-500/25 disabled:opacity-50 disabled:cursor-not-allowed transition-all flex items-center justify-center space-x-2 group"
-      >
-        <Play className="w-4 h-4 fill-current group-hover:scale-110 transition-transform" />
-        <span>{isLoading ? 'Initializing Clinical State Machine...' : 'Launch Autonomous Multi-Agent Pipeline'}</span>
-      </button>
+      {/* Submit Button */}
+      <div className="pt-4 border-t border-slate-200">
+        <button
+          type="submit"
+          disabled={isLoading || !clinicalCase.trim()}
+          className="w-full py-4 rounded-2xl bg-gradient-to-r from-blue-600 via-teal-600 to-emerald-600 hover:from-blue-700 hover:to-emerald-700 disabled:opacity-50 text-white font-extrabold text-sm tracking-wide shadow-lg shadow-blue-500/20 transition-all flex items-center justify-center space-x-2"
+        >
+          {isLoading ? (
+            <>
+              <Activity className="w-5 h-5 animate-spin" />
+              <span>Initializing Autonomous Clinical Multi-Agent Board...</span>
+            </>
+          ) : (
+            <>
+              <Play className="w-5 h-5 fill-white" />
+              <span>Orchestrate Clinical Case Execution</span>
+            </>
+          )}
+        </button>
+      </div>
 
     </form>
   );

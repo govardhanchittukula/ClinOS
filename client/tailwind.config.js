@@ -1,5 +1,6 @@
 /** @type {import('tailwindcss').Config} */
 export default {
+  darkMode: 'class',
   content: [
     "./index.html",
     "./src/**/*.{js,ts,jsx,tsx}",
@@ -24,6 +25,11 @@ export default {
           500: '#10b981',
           900: '#064e3b',
         },
+        medical: {
+          blue: '#0284c7',
+          light: '#f8fafc',
+          card: '#ffffff',
+        },
       },
       fontFamily: {
         sans: ['Inter', 'system-ui', 'sans-serif'],
@@ -31,7 +37,6 @@ export default {
       },
       animation: {
         'pulse-glow': 'pulse-glow 2s cubic-bezier(0.4, 0, 0.6, 1) infinite',
-        'terminal-scroll': 'fadeIn 0.3s ease-out',
       },
       keyframes: {
         'pulse-glow': {

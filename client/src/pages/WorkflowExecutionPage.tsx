@@ -8,6 +8,10 @@ import { ThoughtStreamTerminal } from '../components/ThoughtStreamTerminal';
 import { ClinicalOutputRenderer } from '../components/ClinicalOutputRenderer';
 import { TaskMetricsCard } from '../components/TaskMetricsCard';
 import { MedicalDisclaimerBanner } from '../components/MedicalDisclaimerBanner';
+import { RecommendedDoctorsSection } from '../components/RecommendedDoctorsSection';
+import { PrescriptionSection } from '../components/PrescriptionSection';
+import { HospitalLocator } from '../components/HospitalLocator';
+import { BedType } from '../types';
 
 export const WorkflowExecutionPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -43,7 +47,6 @@ export const WorkflowExecutionPage: React.FC = () => {
         if ((logEvent as any).type === 'HANDSHAKE') return;
 
         setLogs((prev) => {
-          // avoid duplicate logs by id
           if (prev.some((l) => l.id === logEvent.id)) return prev;
           return [...prev, logEvent];
         });
@@ -89,10 +92,10 @@ export const WorkflowExecutionPage: React.FC = () => {
 
   if (!workflow) {
     return (
-      <div className="min-h-screen bg-[#0b0f19] flex items-center justify-center p-4">
+      <div className="min-h-screen bg-slate-50 flex items-center justify-center p-4">
         <div className="text-center space-y-3">
-          <Activity className="w-8 h-8 text-cyan-400 animate-spin mx-auto" />
-          <p className="text-xs text-slate-400">Connecting to ClinOS Agent Stream...</p>
+          <Activity className="w-8 h-8 text-blue-600 animate-spin mx-auto" />
+          <p className="text-xs text-slate-500 font-medium">Connecting to ClinOS Agent Stream...</p>
         </div>
       </div>
     );
@@ -100,29 +103,59 @@ export const WorkflowExecutionPage: React.FC = () => {
 
   const isCompleted = workflow.status === 'completed' || Boolean(workflow.final_output);
 
+  // Auto-detect bed type & urgency recommendation from case text
+  const caseLower = (workflow.clinical_case || '').toLowerCase();
+  let recommendedBedType: BedType = 'general';
+  let urgencyLevel = 'Urgent Care Routing';
+
+  if (
+    caseLower.includes('respiratory') ||
+    caseLower.includes('dyspnea') ||
+    caseLower.includes('hypoxia') ||
+    caseLower.includes('oxygen') ||
+    caseLower.includes('asthma') ||
+    caseLower.includes('pneumonia') ||
+    caseLower.includes('embolism')
+  ) {
+    recommendedBedType = 'oxygen';
+    urgencyLevel = 'Urgent Care (Oxygen Support Required)';
+  } else if (
+    caseLower.includes('stroke') ||
+    caseLower.includes('infarction') ||
+    caseLower.includes('stemi') ||
+    caseLower.includes('sepsis') ||
+    caseLower.includes('shock') ||
+    caseLower.includes('appendicitis') ||
+    caseLower.includes('cardiac') ||
+    caseLower.includes('chest pain')
+  ) {
+    recommendedBedType = 'icu';
+    urgencyLevel = 'Emergency Admission (ICU/Trauma Hold)';
+  }
+
   return (
-    <div className="min-h-screen bg-[#0b0f19] pb-24">
+    <div className="min-h-screen bg-slate-50 text-slate-900 pb-24">
       <MedicalDisclaimerBanner />
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 space-y-6">
         
         {/* Top Control Bar */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-800">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-200">
           <div className="flex items-center space-x-3">
             <Link
               to="/dashboard"
-              className="p-2 rounded-xl bg-slate-900 hover:bg-slate-850 border border-slate-800 text-slate-400 hover:text-slate-200 transition-all"
+              className="p-2.5 rounded-xl bg-white hover:bg-slate-50 border border-slate-200 text-slate-600 hover:text-slate-900 shadow-sm transition-all"
             >
               <ArrowLeft className="w-4 h-4" />
             </Link>
             <div>
               <div className="flex items-center space-x-2">
-                <h1 className="text-xl font-bold text-white">Clinical Workflow Execution</h1>
-                <span className="font-mono text-[10px] px-2 py-0.5 rounded bg-cyan-950 text-cyan-300 border border-cyan-500/30">
+                <h1 className="text-xl font-bold text-slate-900">Clinical Workflow Execution</h1>
+                <span className="font-mono text-[10px] font-bold px-2 py-0.5 rounded bg-blue-50 text-blue-700 border border-blue-200">
                   ID: {workflow.id.slice(0, 8)}
                 </span>
               </div>
-              <p className="text-xs text-slate-400 mt-0.5 line-clamp-1">
+              <p className="text-xs text-slate-500 mt-0.5 line-clamp-1">
                 Patient Case: "{workflow.clinical_case}"
               </p>
             </div>
@@ -132,19 +165,19 @@ export const WorkflowExecutionPage: React.FC = () => {
             <span
               className={`px-3 py-1 rounded-full text-xs font-mono font-bold border uppercase flex items-center space-x-1.5 ${
                 workflow.status === 'running'
-                  ? 'bg-cyan-950 text-cyan-300 border-cyan-500/50'
+                  ? 'bg-blue-50 text-blue-700 border-blue-300'
                   : workflow.status === 'completed'
-                  ? 'bg-emerald-950 text-emerald-300 border-emerald-500/50'
-                  : 'bg-rose-950 text-rose-300 border-rose-500/50'
+                  ? 'bg-emerald-50 text-emerald-700 border-emerald-300'
+                  : 'bg-rose-50 text-rose-700 border-rose-300'
               }`}
             >
               <span
                 className={`w-2 h-2 rounded-full ${
                   workflow.status === 'running'
-                    ? 'bg-cyan-400 animate-ping'
+                    ? 'bg-blue-500 animate-ping'
                     : workflow.status === 'completed'
-                    ? 'bg-emerald-400'
-                    : 'bg-rose-400'
+                    ? 'bg-emerald-500'
+                    : 'bg-rose-500'
                 }`}
               />
               <span>{workflow.status}</span>
@@ -176,13 +209,33 @@ export const WorkflowExecutionPage: React.FC = () => {
           onCancel={handleCancelWorkflow}
         />
 
-        {/* Final Compiled Report (When Completed) */}
-        {isCompleted && workflow.final_output && (
-          <div className="pt-4">
-            <ClinicalOutputRenderer
-              content={workflow.final_output}
-              outputFormat={workflow.configuration?.outputFormat || 'Markdown'}
-              workflowId={workflow.id}
+        {/* Final Compiled Report, Bed Routing, Prescriptions & Doctors */}
+        {isCompleted && (
+          <div className="pt-4 space-y-8">
+            {workflow.final_output && (
+              <ClinicalOutputRenderer
+                content={workflow.final_output}
+                outputFormat={workflow.configuration?.outputFormat || 'Markdown'}
+                workflowId={workflow.id}
+              />
+            )}
+
+            {/* Real-Time Physical Bed Tracking & 2-Hour Reservation Hold */}
+            <HospitalLocator
+              recommendedBedType={recommendedBedType}
+              triageUrgency={urgencyLevel}
+              clinicalCaseSummary={workflow.clinical_case}
+              isEmbedded={true}
+            />
+
+            {/* Evidence-Based Pharmacotherapy & Prescription Regimen */}
+            <PrescriptionSection
+              clinicalCase={workflow.clinical_case}
+            />
+
+            {/* Specialized Doctor Referrals */}
+            <RecommendedDoctorsSection
+              clinicalCase={workflow.clinical_case}
             />
           </div>
         )}

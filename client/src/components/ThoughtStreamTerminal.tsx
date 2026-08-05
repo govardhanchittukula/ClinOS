@@ -50,10 +50,10 @@ export const ThoughtStreamTerminal: React.FC<Props> = ({ logs, status, onCancel 
   };
 
   return (
-    <div className="w-full rounded-2xl bg-slate-950 border border-slate-800 shadow-2xl overflow-hidden font-mono text-xs">
+    <div className="w-full rounded-2xl bg-[#070b14] dark:bg-slate-950 border border-slate-700 dark:border-slate-800 shadow-2xl overflow-hidden font-mono text-xs transition-colors duration-300">
       
       {/* Terminal Top Bar */}
-      <div className="px-4 py-3 bg-slate-900 border-b border-slate-800 flex items-center justify-between flex-wrap gap-2">
+      <div className="px-4 py-3 bg-slate-900 dark:bg-slate-900 border-b border-slate-700 dark:border-slate-800 flex items-center justify-between flex-wrap gap-2">
         <div className="flex items-center space-x-3">
           <div className="flex space-x-1.5">
             <span className="w-3 h-3 rounded-full bg-rose-500/80 inline-block" />

@@ -3,6 +3,9 @@ import cors from 'cors';
 import helmet from 'helmet';
 import { env } from './config/env';
 import workflowRoutes from './routes/workflow.routes';
+import specialistRoutes from './routes/specialist.routes';
+import prescriptionRoutes from './routes/prescription.routes';
+import hospitalRoutes from './routes/hospital.routes';
 import { errorHandler } from './middleware/error.middleware';
 import { rateLimiter } from './middleware/rateLimit.middleware';
 import { isLiveGeminiAvailable } from './config/gemini';
@@ -46,6 +49,9 @@ app.get('/api/health', (req, res) => {
 
 // API Routes
 app.use('/api', workflowRoutes);
+app.use('/api/specialists', specialistRoutes);
+app.use('/api/prescriptions', prescriptionRoutes);
+app.use('/api', hospitalRoutes);
 
 // Global Error Handler
 app.use(errorHandler);

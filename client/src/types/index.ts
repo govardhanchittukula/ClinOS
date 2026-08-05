@@ -46,3 +46,177 @@ export interface WorkflowMetrics {
   isClinicallySafe: boolean;
   riskLevel: 'Low' | 'Moderate' | 'Critical - Retry Required';
 }
+
+export interface DoctorSpecialist {
+  id: string;
+  name: string;
+  title: string;
+  specialty: string;
+  category:
+    | 'General Surgery'
+    | 'Gastroenterology'
+    | 'Cardiology'
+    | 'Neurology'
+    | 'Pulmonology'
+    | 'Orthopedics'
+    | 'Nephrology'
+    | 'Dermatology'
+    | 'Emergency Medicine'
+    | 'Endocrinology'
+    | 'Infectious Disease'
+    | 'Internal Medicine';
+  hospital: string;
+  location: string;
+  rating: number;
+  reviewsCount: number;
+  experienceYears: number;
+  education: string;
+  boardCertifications: string[];
+  languages: string[];
+  consultationModes: ('In-Person' | 'Telehealth' | 'Urgent Referral')[];
+  matchingKeywords: string[];
+  nextAvailableSlot: string;
+  consultationFee: string;
+  phone: string;
+  email: string;
+  verifiedBadge: boolean;
+  avatarColor: string;
+  bio: string;
+}
+
+export interface MatchedSpecialist extends DoctorSpecialist {
+  matchScore: number;
+  matchReason: string;
+  urgencyLevel: 'Emergency Consultation' | 'Urgent Referral (Within 24h)' | 'Routine Specialist Review';
+}
+
+export interface RecommendationResult {
+  primarySpecialty: string;
+  referralRationale: string;
+  recommendedSpecialists: MatchedSpecialist[];
+  suggestedQuestionsForDoctor: string[];
+}
+
+export interface AppointmentBookingPayload {
+  specialistId: string;
+  patientName: string;
+  patientEmail: string;
+  patientPhone: string;
+  preferredDate: string;
+  preferredTime: string;
+  consultationMode: 'In-Person' | 'Telehealth';
+  reasonForVisit: string;
+  clinicalCaseSummary?: string;
+}
+
+export interface AppointmentConfirmation {
+  confirmationId: string;
+  status: 'confirmed' | 'pending_verification';
+  specialist: DoctorSpecialist;
+  scheduledTime: string;
+  consultationMode: string;
+  patientName: string;
+  instructions: string;
+  createdAt: string;
+}
+
+export interface FormularyMedication {
+  id: string;
+  genericName: string;
+  brandNames: string[];
+  drugClass:
+    | 'Antibiotic / Antimicrobial'
+    | 'Analgesic & Antipyretic'
+    | 'Cardiovascular & Antihypertensive'
+    | 'Antiemetic & Gastrointestinal'
+    | 'Respiratory & Bronchodilator'
+    | 'Anticoagulant & Antiplatelet'
+    | 'Neurological & Anticonvulsant'
+    | 'Endocrine & Metabolic'
+    | 'Corticosteroid & Anti-inflammatory';
+  standardDosage: string;
+  route: string;
+  frequency: string;
+  typicalDuration: string;
+  indications: string[];
+  matchingKeywords: string[];
+  contraindications: string[];
+  sideEffects: string[];
+  counselingInstructions: string;
+  pregnancyCategory: string;
+  requiresPrescription: boolean;
+  controlledSubstanceSchedule?: string;
+}
+
+export interface PrescribedItem {
+  medication: FormularyMedication;
+  tier: 'First-Line Therapy' | 'Second-Line / Alternative' | 'Symptomatic Relief';
+  dosage: string;
+  route: string;
+  frequency: string;
+  duration: string;
+  clinicalRationale: string;
+  dispenseQuantity: string;
+  refillsAllowed: number;
+  criticalWarning?: string;
+}
+
+export interface PrescriptionPlan {
+  rxIdentifier: string;
+  generatedDate: string;
+  primaryConditionTarget: string;
+  overallTherapeuticGoal: string;
+  prescriptions: PrescribedItem[];
+  safetyAlerts: string[];
+  dietaryAndLifestyleInstructions: string[];
+  mandatoryPhysicianDisclaimer: string;
+}
+
+export type BedType = 'general' | 'oxygen' | 'icu';
+
+export interface Hospital {
+  id: string;
+  name: string;
+  locality: string;
+  address: string;
+  latitude: number;
+  longitude: number;
+  contact_number: string;
+  emergency_helpline: string;
+  general_beds_available: number;
+  general_beds_total: number;
+  oxygen_beds_available: number;
+  oxygen_beds_total: number;
+  icu_beds_available: number;
+  icu_beds_total: number;
+  ambulance_available: boolean;
+  rating: number;
+  distance_km: number;
+  specialties?: string[];
+  created_at?: string;
+}
+
+export interface BedBookingPayload {
+  hospital_id: string;
+  patient_id?: string;
+  patient_name: string;
+  patient_phone?: string;
+  bed_type: BedType;
+}
+
+export interface BedBooking {
+  id: string;
+  booking_token: string;
+  patient_id: string;
+  patient_name: string;
+  patient_phone?: string;
+  hospital_id: string;
+  hospital_name: string;
+  bed_type: BedType;
+  status: 'held' | 'confirmed' | 'cancelled';
+  hold_duration_hours: number;
+  booking_timestamp: string;
+  expires_at: string;
+  instructions: string;
+}
+
