@@ -1,6 +1,12 @@
 # ClinOS – Clinical Operations System
 
-> **ClinOS** is a **modern, enterprise‑grade, multi‑agent clinical orchestration platform** built with a **React + Vite** frontend, a **Node.js/Express** backend, and **Supabase** for authentication and data storage.  The UI has been meticulously polished for a premium, responsive experience (dark/light mode, glass‑morphism, consistent spacing, and a shared layout with sidebar, header, and medical disclaimer banner).
+[![Live Demo](https://img.shields.io/badge/Live%20Demo-clin--os.vercel.app-2563eb?style=for-the-badge&logo=vercel&logoColor=white)](https://clin-os.vercel.app)
+[![Deploy on Render](https://img.shields.io/badge/Deploy%20Backend-Render-46E3B7?style=for-the-badge&logo=render&logoColor=white)](https://render.com)
+[![GitHub Repository](https://img.shields.io/badge/GitHub-ClinOS-181717?style=for-the-badge&logo=github&logoColor=white)](https://github.com/govardhanchittukula/ClinOS)
+
+> 🚀 **Live Application:** [**https://clin-os.vercel.app**](https://clin-os.vercel.app)
+>
+> **ClinOS** is a **modern, enterprise‑grade, multi‑agent clinical orchestration platform** built with a **React + Vite** frontend, a **Node.js/Express** backend, and **Supabase** for authentication and data storage. The UI features a premium, Apple/Linear-inspired responsive experience (glass‑morphism, smooth Anime.js micro‑animations, and standard clinical workflows).
 
 ---
 
