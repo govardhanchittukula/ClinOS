@@ -56,7 +56,12 @@ app.use('/api/prescriptions', prescriptionRoutes);
 app.use('/api', hospitalRoutes);
 
 // Static Client Asset Serving in Production
-const clientDistPath = path.resolve(__dirname, '../../client/dist');
+const clientDistPath = [
+  path.resolve(__dirname, '../../client/dist'),
+  path.resolve(__dirname, '../client/dist'),
+  path.resolve(process.cwd(), 'client/dist'),
+].find((p) => fs.existsSync(p)) || path.resolve(__dirname, '../../client/dist');
+
 if (fs.existsSync(clientDistPath)) {
   app.use(express.static(clientDistPath));
   app.get('*', (req, res, next) => {
