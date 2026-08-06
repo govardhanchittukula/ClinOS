@@ -23,7 +23,18 @@ import {
 } from './clientSimulation';
 import { CLIENT_SPECIALISTS, CLIENT_FORMULARY, CLIENT_HOSPITALS } from '../data/mockData';
 
-export const API_BASE = (import.meta.env.VITE_API_URL ? String(import.meta.env.VITE_API_URL).replace(/\/$/, '') : '') + '/api';
+const getApiBase = () => {
+  if (import.meta.env.VITE_API_URL) {
+    return String(import.meta.env.VITE_API_URL).replace(/\/$/, '') + '/api';
+  }
+  if (typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')) {
+    return '/api';
+  }
+  // Production default connects directly to the live Render backend
+  return 'https://clinos-4.onrender.com/api';
+};
+
+export const API_BASE = getApiBase();
 
 export async function createWorkflowApi(payload: {
   clinicalCase: string;
