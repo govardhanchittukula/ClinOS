@@ -1,6 +1,8 @@
 import express from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
+import path from 'path';
+import fs from 'fs';
 import { env } from './config/env';
 import workflowRoutes from './routes/workflow.routes';
 import specialistRoutes from './routes/specialist.routes';
@@ -53,6 +55,18 @@ app.use('/api/specialists', specialistRoutes);
 app.use('/api/prescriptions', prescriptionRoutes);
 app.use('/api', hospitalRoutes);
 
+// Static Client Asset Serving in Production
+const clientDistPath = path.resolve(__dirname, '../../client/dist');
+if (fs.existsSync(clientDistPath)) {
+  app.use(express.static(clientDistPath));
+  app.get('*', (req, res, next) => {
+    if (req.path.startsWith('/api')) {
+      return next();
+    }
+    res.sendFile(path.join(clientDistPath, 'index.html'));
+  });
+}
+
 // Global Error Handler
 app.use(errorHandler);
 
@@ -66,3 +80,4 @@ app.listen(PORT, () => {
   console.log(`🗄️ Supabase Status: ${isSupabaseConfigured ? 'CONNECTED' : 'LOCAL IN-MEMORY DB'}`);
   console.log(`==================================================\n`);
 });
+

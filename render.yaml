@@ -1,0 +1,25 @@
+# Render Blueprint Configuration for ClinOS
+# https://render.com/docs/blueprint-spec
+
+services:
+  # Unified Monorepo Web Service
+  - type: web
+    name: clinos-clinical-os
+    runtime: node
+    plan: free
+    region: oregon
+    buildCommand: npm run install:all && npm run build
+    startCommand: npm run start:server
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 10000
+      - key: GEMINI_API_KEY
+        sync: false
+      - key: VITE_SUPABASE_URL
+        sync: false
+      - key: VITE_SUPABASE_ANON_KEY
+        sync: false
+      - key: SUPABASE_SERVICE_ROLE_KEY
+        sync: false
