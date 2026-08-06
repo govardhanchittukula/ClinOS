@@ -1,8 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Stethoscope, ShieldAlert, Sparkles } from 'lucide-react';
+import { Stethoscope, ShieldAlert } from 'lucide-react';
 import { WorkflowConfigForm } from '../components/WorkflowConfigForm';
-import { MedicalDisclaimerBanner } from '../components/MedicalDisclaimerBanner';
 import { createWorkflowApi } from '../lib/api';
 import { getStoredAuthUser } from '../lib/supabase';
 import { ComplexityLevel, OutputFormat } from '../types';
@@ -42,36 +41,30 @@ export const NewWorkflowPage: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-900 pb-20">
-      <MedicalDisclaimerBanner />
-
-      <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 pt-8">
-        
-        {/* Header */}
-        <div className="mb-8">
-          <div className="flex items-center space-x-2 text-xs font-mono text-blue-600 mb-1">
-            <Stethoscope className="w-4 h-4" />
-            <span>Clinical Intake Protocol</span>
-          </div>
-          <h1 className="text-3xl font-extrabold text-slate-900 tracking-tight">New Patient Case Intake</h1>
-          <p className="text-xs text-slate-600 mt-1">
-            Input unstructured clinical notes, vital signs, or symptoms to trigger the autonomous multi-agent reasoning board.
-          </p>
+    <div className="w-full max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6 font-sans">
+      {/* Header */}
+      <div>
+        <div className="flex items-center space-x-2 text-xs font-mono text-blue-600 dark:text-blue-400 mb-1 font-bold">
+          <Stethoscope className="w-4 h-4" />
+          <span>Clinical Intake Protocol</span>
         </div>
+        <h1 className="text-xl sm:text-2xl font-extrabold text-slate-900 dark:text-white tracking-tight">New Patient Case Intake</h1>
+        <p className="text-xs text-slate-600 dark:text-slate-400 mt-0.5">
+          Input unstructured clinical notes, vital signs, or symptoms to trigger the autonomous multi-agent reasoning board.
+        </p>
+      </div>
 
-        {errorMsg && (
-          <div className="mb-6 p-4 rounded-xl bg-rose-50 border border-rose-200 text-rose-800 text-xs flex items-center space-x-2">
-            <ShieldAlert className="w-4 h-4 shrink-0 text-rose-600" />
-            <span>{errorMsg}</span>
-          </div>
-        )}
-
-        {/* Configuration Form */}
-        <div className="p-6 md:p-8 rounded-3xl bg-white border border-slate-200 shadow-md">
-          <WorkflowConfigForm onSubmit={handleFormSubmit} isLoading={isLoading} />
+      {errorMsg && (
+        <div className="p-3.5 rounded-xl bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-800 text-rose-800 dark:text-rose-300 text-xs flex items-center space-x-2">
+          <ShieldAlert className="w-4 h-4 shrink-0 text-rose-600 dark:text-rose-400" />
+          <span>{errorMsg}</span>
         </div>
+      )}
 
-      </main>
+      {/* Configuration Form */}
+      <div className="p-5 sm:p-6 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-xs">
+        <WorkflowConfigForm onSubmit={handleFormSubmit} isLoading={isLoading} />
+      </div>
     </div>
   );
 };
