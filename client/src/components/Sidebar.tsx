@@ -10,9 +10,9 @@ import {
   FileText,
   LogOut,
   X,
+  Bot,
+  Sparkles,
 } from 'lucide-react';
-import anime from 'animejs';
-import { slideInFromLeft, killAnime } from '../utils/animation';
 import { BrandLogo } from './BrandLogo';
 import {
   getStoredAuthUser,
@@ -32,14 +32,6 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen = false, onClose }) => 
   const [currentUser, setCurrentUser] = useState<UserProfile>(getStoredAuthUser());
 
   useEffect(() => {
-    // Sidebar entry animation
-    if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-      const anim = slideInFromLeft('#sidebar', { duration: 600, easing: 'easeOutCubic' });
-      return () => killAnime(anim);
-    }
-  }, []);
-
-  useEffect(() => {
     const handleAuthChange = () => {
       setCurrentUser(getStoredAuthUser());
     };
@@ -55,7 +47,8 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen = false, onClose }) => 
 
   const navLinks = [
     { name: 'Home', path: '/', icon: Home },
-    { name: 'Dashboard', path: getRoleDashboardPath(currentUser.role), icon: LayoutDashboard },
+    ...(currentUser?.role === 'patient' ? [{ name: 'Clin AI Companion', path: '/chat', icon: Bot, isSpecial: true }] : []),
+    { name: 'Dashboard', path: getRoleDashboardPath(currentUser?.role || 'patient'), icon: LayoutDashboard },
     { name: 'New Case Intake', path: '/workflows/new', icon: Stethoscope },
     { name: 'Examinations', path: '/examinations', icon: Stethoscope },
     { name: 'Hospital Beds', path: '/hospitals', icon: Bed },
@@ -98,20 +91,37 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen = false, onClose }) => 
                 key={item.name}
                 to={item.path}
                 onClick={onClose}
-                className={`w-full flex items-center gap-3.5 px-4 py-2.5 rounded-xl text-sm font-medium transition-all ${
-                  isActive
-                    ? 'bg-blue-50/90 text-blue-600 font-semibold shadow-xs'
+                className={`w-full flex items-center justify-between px-4 py-2.5 rounded-xl text-sm font-medium transition-all ${
+                  item.isSpecial
+                    ? isActive
+                      ? 'bg-gradient-to-r from-cyan-600 to-indigo-600 text-white font-semibold shadow-md shadow-cyan-600/20'
+                      : 'bg-gradient-to-r from-cyan-50 to-indigo-50 dark:from-cyan-950/40 dark:to-indigo-950/40 text-cyan-800 dark:text-cyan-200 border border-cyan-200/60 dark:border-cyan-800/60 font-semibold hover:border-cyan-400'
+                    : isActive
+                    ? 'bg-blue-50/90 dark:bg-blue-950/50 text-blue-600 dark:text-blue-400 font-semibold shadow-xs'
                     : 'text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-slate-100'
                 }`}
               >
-                <Icon
-                  className={`w-4 h-4 shrink-0 transition-colors ${
-                    isActive
-                      ? 'text-blue-600'
-                      : 'text-slate-400 dark:text-slate-500'
-                  }`}
-                />
-                <span className="truncate">{item.name}</span>
+                <div className="flex items-center gap-3.5 min-w-0">
+                  <Icon
+                    className={`w-4 h-4 shrink-0 transition-colors ${
+                      item.isSpecial
+                        ? isActive
+                          ? 'text-white'
+                          : 'text-cyan-600 dark:text-cyan-400'
+                        : isActive
+                        ? 'text-blue-600 dark:text-blue-400'
+                        : 'text-slate-400 dark:text-slate-500'
+                    }`}
+                  />
+                  <span className="truncate">{item.name}</span>
+                </div>
+                {item.isSpecial && (
+                  <span className={`text-[10px] uppercase font-bold tracking-wider px-1.5 py-0.5 rounded-md ${
+                    isActive ? 'bg-white/20 text-white' : 'bg-cyan-600 text-white'
+                  }`}>
+                    AI
+                  </span>
+                )}
               </NavLink>
             );
           })}

@@ -8,9 +8,8 @@ import {
   HeartPulse,
   User,
   Sparkles,
+  Bot,
 } from 'lucide-react';
-import anime from 'animejs';
-import { fadeIn, killAnime } from '../utils/animation';
 import { UserProfile, UserRole } from '../types';
 import { getStoredAuthUser, switchRole, getRoleDashboardPath } from '../lib/supabase';
 
@@ -28,27 +27,10 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenSidebar }) => {
       setUser(getStoredAuthUser());
     };
 
-    // Header fade-in animation on mount
-    if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-      const anim = fadeIn('#navbar-header', { duration: 600, easing: 'easeOutCubic' });
-      
-      const pulse = anime({
-        targets: '#navbar-status-dot',
-        scale: [1, 1.25],
-        direction: 'alternate',
-        loop: true,
-        duration: 1200,
-        easing: 'easeInOutSine',
-      });
-
-      window.addEventListener('clinos_auth_changed', handleAuthChange);
-      
-      return () => {
-        killAnime(anim);
-        killAnime(pulse);
-        window.removeEventListener('clinos_auth_changed', handleAuthChange);
-      };
-    }
+    window.addEventListener('clinos_auth_changed', handleAuthChange);
+    return () => {
+      window.removeEventListener('clinos_auth_changed', handleAuthChange);
+    };
   }, []);
 
   const handleRoleSwitch = (newRole: UserRole) => {
@@ -100,12 +82,22 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenSidebar }) => {
           </div>
         </div>
 
-        {/* Right: ISO Badge, Mode Pill, and Profile */}
+        {/* Right: Clin AI button, ISO Badge, Mode Pill, and Profile */}
         <div className="flex items-center gap-3 sm:gap-4">
+          {/* Clin AI Quick Launch Button */}
+          <button
+            onClick={() => navigate('/chat')}
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold bg-gradient-to-r from-cyan-600 to-indigo-600 text-white shadow-sm shadow-cyan-500/20 hover:shadow-cyan-500/40 hover:scale-105 transition-all"
+          >
+            <Bot className="w-3.5 h-3.5" />
+            <span>Clin AI</span>
+            <span className="w-1.5 h-1.5 rounded-full bg-emerald-300 animate-ping" />
+          </button>
+
           {/* ISO-13485 Badge */}
           <div className="hidden md:flex items-center gap-1.5 text-xs font-medium text-slate-600 dark:text-slate-300">
             <ShieldCheck className="w-4 h-4 text-blue-600 dark:text-blue-400 shrink-0" />
-            <span>ISO-13485 Compliant</span>
+            <span>ISO-13485</span>
           </div>
 
           {/* Role Pill Switcher */}

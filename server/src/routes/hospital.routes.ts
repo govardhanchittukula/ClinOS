@@ -5,6 +5,8 @@ const router = Router();
 
 // Hospital Bed Tracking & Query routes
 router.get('/hospitals', (req, res, next) => hospitalController.getHospitals(req, res, next));
+router.get('/hospitals/nearby', (req, res, next) => hospitalController.getNearbyFacilities(req, res, next));
+router.post('/hospitals/nearby', (req, res, next) => hospitalController.getNearbyFacilities(req, res, next));
 
 // Bed Reservation & Booking routes
 router.post('/bookings', (req, res, next) => hospitalController.createBedBooking(req, res, next));

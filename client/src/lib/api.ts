@@ -12,6 +12,9 @@ import {
   BedBookingPayload,
   ComplexityLevel,
   OutputFormat,
+  ChatMessage,
+  ChatSessionResponse,
+  NearbyFacilityItem,
 } from '../types';
 import {
   createClientWorkflow,
@@ -20,6 +23,7 @@ import {
   matchSpecialistClient,
   matchPrescriptionPlanClient,
   createBedBookingClient,
+  simulateChatSessionClient,
 } from './clientSimulation';
 import { CLIENT_SPECIALISTS, CLIENT_FORMULARY, CLIENT_HOSPITALS } from '../data/mockData';
 
@@ -387,3 +391,143 @@ export async function getBookingApi(
     };
   }
 }
+
+export async function sendChatMessageApi(payload: {
+  message: string;
+  conversationHistory?: { role: 'user' | 'assistant' | 'system'; content: string }[];
+  userLocation?: { latitude: number; longitude: number };
+  patientContext?: {
+    name?: string;
+    age?: number;
+    gender?: string;
+    knownAllergies?: string[];
+    chronicConditions?: string[];
+  };
+}, signal?: AbortSignal): Promise<ChatSessionResponse> {
+  try {
+    const res = await fetch(`${API_BASE}/chat/message`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+      signal,
+    });
+    const contentType = res.headers.get('content-type') || '';
+    if (res.ok && contentType.includes('application/json')) {
+      return await res.json();
+    }
+    throw new Error('Server returned non-JSON chat response');
+  } catch (err) {
+    console.warn('Backend chat API offline, simulating clinical assistant in browser:', err);
+    return simulateChatSessionClient(payload.message, payload.userLocation) as unknown as ChatSessionResponse;
+  }
+}
+
+export async function getSuggestedPromptsApi(): Promise<{
+  success: boolean;
+  prompts: Array<{ title: string; category: string; prompt: string; badge: string }>;
+}> {
+  try {
+    const res = await fetch(`${API_BASE}/chat/prompts`);
+    const contentType = res.headers.get('content-type') || '';
+    if (res.ok && contentType.includes('application/json')) {
+      return await res.json();
+    }
+    throw new Error('Prompts unavailable');
+  } catch {
+    return {
+      success: true,
+      prompts: [
+        {
+          title: 'Abdominal Triage',
+          category: 'Acute Surgery',
+          prompt: 'I have severe right lower abdominal pain that started around my navel 18 hours ago, with nausea and slight fever.',
+          badge: 'Urgent',
+        },
+        {
+          title: 'Chest Pain Evaluation',
+          category: 'Cardiology',
+          prompt: 'I am feeling crushing central chest pressure radiating towards my left shoulder accompanied by diaphoresis.',
+          badge: 'Emergency',
+        },
+        {
+          title: 'Severe Migraine Protocol',
+          category: 'Neurology',
+          prompt: 'Experiencing a throbbing unilateral temporal headache with photophobia and nausea for the past 6 hours.',
+          badge: 'Moderate',
+        },
+        {
+          title: 'Respiratory & Bronchitis',
+          category: 'Pulmonology',
+          prompt: 'Persistent productive cough with yellow sputum, low-grade fever of 100.8 F, and wheezing on exertion.',
+          badge: 'Routine',
+        },
+      ],
+    };
+  }
+}
+
+export async function getNearbyFacilitiesApi(payload: {
+  latitude?: number;
+  longitude?: number;
+  radiusMeters?: number;
+  type?: 'hospital' | 'doctor' | 'clinic' | 'all';
+  query?: string;
+  bedType?: 'general' | 'oxygen' | 'icu' | 'all';
+}): Promise<{
+  success: boolean;
+  origin: { latitude: number; longitude: number };
+  facilities: NearbyFacilityItem[];
+  total: number;
+  usedLiveGoogleMaps: boolean;
+}> {
+  try {
+    const res = await fetch(`${API_BASE}/hospitals/nearby`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    });
+    const contentType = res.headers.get('content-type') || '';
+    if (res.ok && contentType.includes('application/json')) {
+      return await res.json();
+    }
+    throw new Error('Nearby hospitals service unavailable');
+  } catch {
+    const fallbackFacilities: NearbyFacilityItem[] = CLIENT_HOSPITALS.map((h) => ({
+      id: h.id,
+      name: h.name,
+      address: h.address,
+      locality: h.locality,
+      rating: h.rating,
+      userRatingsTotal: 290,
+      distanceKm: h.distance_km,
+      distanceText: `${h.distance_km} km`,
+      estimatedTravelTime: `${Math.max(3, Math.round(h.distance_km * 2.2))} mins`,
+      phoneNumber: h.contact_number,
+      emergencyHelpline: h.emergency_helpline,
+      googleMapsUrl: `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(h.name + ' ' + h.address)}`,
+      specialties: h.specialties || ['Emergency Trauma', 'ICU Care'],
+      isOpenNow: true,
+      availableBedTypes: {
+        general: h.general_beds_available,
+        oxygen: h.oxygen_beds_available,
+        icu: h.icu_beds_available,
+        total: h.general_beds_available + h.oxygen_beds_available + h.icu_beds_available,
+      },
+      totalBeds: {
+        general: h.general_beds_total,
+        oxygen: h.oxygen_beds_total,
+        icu: h.icu_beds_total,
+      },
+      source: 'clinos_verified_registry' as const,
+    }));
+
+    return {
+      success: true,
+      origin: { latitude: payload.latitude || 17.4182, longitude: payload.longitude || 78.3473 },
+      facilities: fallbackFacilities,
+      total: fallbackFacilities.length,
+      usedLiveGoogleMaps: false,
+    };
+  }
+}
+

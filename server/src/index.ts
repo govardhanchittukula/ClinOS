@@ -8,6 +8,7 @@ import workflowRoutes from './routes/workflow.routes';
 import specialistRoutes from './routes/specialist.routes';
 import prescriptionRoutes from './routes/prescription.routes';
 import hospitalRoutes from './routes/hospital.routes';
+import chatRoutes from './routes/chat.routes';
 import { errorHandler } from './middleware/error.middleware';
 import { rateLimiter } from './middleware/rateLimit.middleware';
 import { isLiveGeminiAvailable } from './config/gemini';
@@ -54,6 +55,7 @@ app.use('/api', workflowRoutes);
 app.use('/api/specialists', specialistRoutes);
 app.use('/api/prescriptions', prescriptionRoutes);
 app.use('/api', hospitalRoutes);
+app.use('/api/chat', chatRoutes);
 
 // Static Client Asset Serving in Production
 const clientDistPath = [

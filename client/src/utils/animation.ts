@@ -110,12 +110,23 @@ export const countUp = (
 };
 
 /**
- * Generic helper to kill an anime instance safely.
+ * Generic helper to kill an anime instance safely without leaving elements hidden.
  */
 export const killAnime = (instance?: AnimeInstance) => {
   if (instance) {
-    instance.pause();
-    instance.seek(0);
+    try {
+      instance.pause();
+      if (instance.animatables) {
+        instance.animatables.forEach((a) => {
+          if (a.target instanceof HTMLElement) {
+            a.target.style.opacity = '1';
+            a.target.style.transform = '';
+          }
+        });
+      }
+    } catch {
+      // Ignore cleanup error
+    }
   }
 };
 

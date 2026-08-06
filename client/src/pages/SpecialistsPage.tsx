@@ -9,6 +9,7 @@ import { DoctorSpecialist } from '../types';
 import { getSpecialistsApi } from '../lib/api';
 import { DoctorSpecialistCard } from '../components/DoctorSpecialistCard';
 import { DoctorBookingModal } from '../components/DoctorBookingModal';
+import { useClinStore } from '../store/useClinStore';
 
 const SPECIALTIES = [
   'All',
@@ -25,9 +26,12 @@ const SPECIALTIES = [
 ];
 
 export const SpecialistsPage: React.FC = () => {
+  const { lastSpecialistReferral } = useClinStore();
+  const recommendedSpecialty = lastSpecialistReferral?.primarySpecialty;
+  
   const [specialists, setSpecialists] = useState<DoctorSpecialist[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
-  const [selectedSpecialty, setSelectedSpecialty] = useState<string>('All');
+  const [selectedSpecialty, setSelectedSpecialty] = useState<string>(recommendedSpecialty || 'All');
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [telehealthOnly, setTelehealthOnly] = useState<boolean>(false);
   const [selectedSpecialistForBooking, setSelectedSpecialistForBooking] = useState<DoctorSpecialist | null>(null);

@@ -28,6 +28,37 @@ export class HospitalController {
   }
 
   /**
+   * GET/POST /api/hospitals/nearby
+   * Query nearby hospitals using Google Places API or coordinate-based hospital registry
+   */
+  async getNearbyFacilities(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const lat = req.body?.latitude ?? req.query?.latitude ?? req.query?.lat;
+      const lng = req.body?.longitude ?? req.query?.longitude ?? req.query?.lng;
+      const radius = req.body?.radiusMeters ?? req.query?.radiusMeters ?? req.query?.radius;
+      const type = req.body?.type ?? req.query?.type;
+      const query = req.body?.query ?? req.query?.query;
+      const bedType = req.body?.bedType ?? req.query?.bedType;
+
+      const result = await hospitalService.getNearbyFacilities({
+        latitude: lat !== undefined ? Number(lat) : undefined,
+        longitude: lng !== undefined ? Number(lng) : undefined,
+        radiusMeters: radius !== undefined ? Number(radius) : undefined,
+        type: type ? String(type) as any : undefined,
+        query: query ? String(query) : undefined,
+        bedType: bedType ? String(bedType) as any : undefined,
+      });
+
+      res.status(200).json({
+        success: true,
+        ...result,
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  /**
    * POST /api/bookings
    * Reserve an emergency bed hold for 2 hours
    */

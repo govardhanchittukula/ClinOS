@@ -56,3 +56,14 @@
   --secondary-color: #64748b;
   --bg-color: #f8fafc;
 }
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

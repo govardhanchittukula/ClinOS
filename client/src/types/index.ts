@@ -220,3 +220,86 @@ export interface BedBooking {
   instructions: string;
 }
 
+export interface NearbyFacilityItem {
+  id: string;
+  name: string;
+  address: string;
+  locality: string;
+  rating: number;
+  userRatingsTotal?: number;
+  distanceKm: number;
+  distanceText: string;
+  estimatedTravelTime: string;
+  phoneNumber: string;
+  emergencyHelpline: string;
+  googleMapsUrl: string;
+  specialties: string[];
+  isOpenNow: boolean;
+  availableBedTypes: {
+    general: number;
+    oxygen: number;
+    icu: number;
+    total: number;
+  };
+  totalBeds: {
+    general: number;
+    oxygen: number;
+    icu: number;
+  };
+  source: 'google_places' | 'clinos_verified_registry';
+}
+
+export interface ClinicalTriageSummary {
+  urgencyLevel: 'Emergency (Level 1)' | 'Urgent (Level 2)' | 'Moderate (Level 3)' | 'Routine (Level 4)';
+  criticalityPercentage?: number;
+  criticalityTier?: 'Low Concern (0-40%)' | 'Moderate Concern (41-70%)' | 'High Concern / Emergency (71-100%)';
+  criticalityExplanation?: string;
+  warningSignsEscalation?: string[];
+  homeCareGuidance?: string[];
+  primaryDiagnosis: string;
+  icd10Code: string;
+  confidenceScore: number;
+  isRedFlag: boolean;
+  redFlagWarning?: string;
+  soapSubjective: string;
+  soapObjective: string;
+  soapAssessment: string;
+  soapPlan: string;
+}
+
+export interface ChatMessage {
+  id: string;
+  sender: 'user' | 'clin' | 'system';
+  content: string;
+  timestamp: string;
+  metadata?: {
+    triage?: ClinicalTriageSummary;
+    prescriptionPlan?: PrescriptionPlan;
+    specialistReferral?: {
+      primarySpecialty: string;
+      rationale: string;
+      specialists: MatchedSpecialist[];
+      questions: string[];
+    };
+    nearbyFacilities?: (NearbyFacilityItem | Hospital)[];
+    emergencyTriggered?: boolean;
+    suggestedFollowUps?: string[];
+  };
+}
+
+export interface ChatSessionResponse {
+  success: boolean;
+  message: ChatMessage;
+  triage?: ClinicalTriageSummary;
+  prescriptionPlan?: PrescriptionPlan;
+  specialistReferral?: {
+    primarySpecialty: string;
+    rationale: string;
+    specialists: MatchedSpecialist[];
+    questions: string[];
+  };
+  nearbyFacilities?: NearbyFacilityItem[];
+  suggestedFollowUps: string[];
+}
+
+

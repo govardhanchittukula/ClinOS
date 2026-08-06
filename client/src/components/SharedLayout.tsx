@@ -5,6 +5,7 @@ import { Navbar } from './Navbar';
 import { MedicalDisclaimerBanner } from './MedicalDisclaimerBanner';
 import { Footer } from './Footer';
 import PageTransition from './PageTransition';
+import { ClinFloatingAssistant } from './chat/ClinFloatingAssistant';
 
 interface SharedLayoutProps {
   children?: React.ReactNode;
@@ -37,6 +38,10 @@ export const SharedLayout: React.FC<SharedLayoutProps> = ({ children }) => {
         {/* Footer */}
         <Footer />
       </div>
+
+      {/* Global Interactive Clin AI Assistant */}
+      <ClinFloatingAssistant />
     </div>
   );
 };
+

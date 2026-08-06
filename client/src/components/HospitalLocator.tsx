@@ -23,6 +23,7 @@ import {
 import { Hospital, BedType, BedBooking } from '../types';
 import { getHospitalsApi } from '../lib/api';
 import { BedBookingModal } from './BedBookingModal';
+import { useClinStore } from '../store/useClinStore';
 
 interface HospitalLocatorProps {
   recommendedBedType?: BedType;
@@ -37,16 +38,20 @@ export const HospitalLocator: React.FC<HospitalLocatorProps> = ({
   clinicalCaseSummary,
   isEmbedded = false
 }) => {
+  const { userLocation, lastTriageSummary } = useClinStore();
+  const criticalityPercentage = lastTriageSummary?.criticalityPercentage ?? 0;
+  
   const [hospitals, setHospitals] = useState<Hospital[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [selectedLocality, setSelectedLocality] = useState<string>('all');
   const [selectedBedType, setSelectedBedType] = useState<string>(
-    recommendedBedType !== 'all' ? recommendedBedType : 'all'
+    recommendedBedType !== 'all' ? recommendedBedType : (criticalityPercentage > 70 ? 'icu' : 'all')
   );
-  const [userLocationDetected, setUserLocationDetected] = useState<boolean>(true);
+  
+  const [userLocationDetected, setUserLocationDetected] = useState<boolean>(!!userLocation);
   const [activeLocalityLabel, setActiveLocalityLabel] = useState<string>(
-    'Ranga Reddy District / Financial District & HITEC City, Telangana'
+    userLocation ? `GPS Fixed: ${userLocation.latitude?.toFixed(4)}° N, ${userLocation.longitude?.toFixed(4)}° E` : 'Ranga Reddy District / Financial District & HITEC City, Telangana'
   );
 
   // Selected hospital for booking modal

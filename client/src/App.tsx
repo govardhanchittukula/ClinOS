@@ -17,6 +17,7 @@ import { SpecialistsPage } from './pages/SpecialistsPage';
 import { PrescriptionsPage } from './pages/PrescriptionsPage';
 import { HospitalsPage } from './pages/HospitalsPage';
 import { ExaminationsPage } from './pages/ExaminationsPage';
+import { ClinChatPage } from './pages/ClinChatPage';
 
 export const App: React.FC = () => {
   return (
@@ -70,6 +71,22 @@ export const App: React.FC = () => {
             />
 
             {/* Clinical Modules */}
+            <Route
+              path="/chat"
+              element={
+                <ProtectedRoute allowedRoles={['patient']}>
+                  <ClinChatPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/companion"
+              element={
+                <ProtectedRoute allowedRoles={['patient']}>
+                  <ClinChatPage />
+                </ProtectedRoute>
+              }
+            />
             <Route path="/workflows/new" element={<NewWorkflowPage />} />
             <Route path="/workflows/:id" element={<WorkflowExecutionPage />} />
             <Route path="/hospitals" element={<HospitalsPage />} />
