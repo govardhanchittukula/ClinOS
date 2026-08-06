@@ -35,52 +35,76 @@ export const WorkflowExecutionPage: React.FC = () => {
       .catch((err) => console.warn('Fetch workflow error:', err));
   }, [id]);
 
-  // Connect to SSE Log Stream
+  // Connect to SSE Log Stream and local simulation event stream
   useEffect(() => {
     if (!id) return;
 
-    const eventSource = new EventSource(`${API_BASE}/workflows/${id}/stream`);
+    const processLogEvent = (logEvent: AgentLog) => {
+      if ((logEvent as any).type === 'HANDSHAKE') return;
 
-    eventSource.onmessage = (event) => {
-      try {
-        const logEvent: AgentLog = JSON.parse(event.data);
-        if ((logEvent as any).type === 'HANDSHAKE') return;
+      setLogs((prev) => {
+        if (prev.some((l) => l.id === logEvent.id)) return prev;
+        return [...prev, logEvent];
+      });
 
-        setLogs((prev) => {
-          if (prev.some((l) => l.id === logEvent.id)) return prev;
-          return [...prev, logEvent];
-        });
+      // Update active agent node state based on log events
+      const role = logEvent.agentRole || (logEvent as any).agent_role;
+      if (role) {
+        setActiveAgent(role);
+      }
 
-        // Update active agent node state based on log events
-        if (logEvent.agentRole) {
-          setActiveAgent(logEvent.agentRole);
+      if (logEvent.action === 'CRITIC_REJECTED_RETRY') {
+        setIsCriticRejected(true);
+        if (logEvent.payload?.iteration) {
+          setCriticIteration(logEvent.payload.iteration);
         }
+      } else if (logEvent.action === 'CRITIC_APPROVED') {
+        setIsCriticRejected(false);
+      }
 
-        if (logEvent.action === 'CRITIC_REJECTED_RETRY') {
-          setIsCriticRejected(true);
-          if (logEvent.payload?.iteration) {
-            setCriticIteration(logEvent.payload.iteration);
-          }
-        } else if (logEvent.action === 'CRITIC_APPROVED') {
-          setIsCriticRejected(false);
-        }
-
-        if (logEvent.action === 'ORCHESTRATION_FINISHED') {
-          setExecutionTimeMs(Date.now() - startTime);
-          // Refresh workflow to get final output
-          getSingleWorkflowApi(id).then((data) => setWorkflow(data.workflow));
-        }
-      } catch (err) {
-        console.warn('SSE Parse error:', err);
+      if (logEvent.action === 'ORCHESTRATION_FINISHED') {
+        setExecutionTimeMs(Date.now() - startTime);
+        // Refresh workflow to get final output
+        getSingleWorkflowApi(id).then((data) => setWorkflow(data.workflow));
       }
     };
 
-    eventSource.onerror = (err) => {
-      console.warn('SSE Connection closed or re-connecting:', err);
+    // 1. Listen for local simulation stream events
+    const handleLocalEvent = (e: Event) => {
+      const customEvent = e as CustomEvent<AgentLog>;
+      if (customEvent.detail && (customEvent.detail.workflowId === id || (customEvent.detail as any).workflow_id === id)) {
+        processLogEvent(customEvent.detail);
+      }
     };
+    window.addEventListener('clinos_stream_event', handleLocalEvent);
+
+    // 2. Connect to remote SSE stream (if backend is active)
+    let eventSource: EventSource | null = null;
+    try {
+      eventSource = new EventSource(`${API_BASE}/workflows/${id}/stream`);
+
+      eventSource.onmessage = (event) => {
+        try {
+          const logEvent: AgentLog = JSON.parse(event.data);
+          processLogEvent(logEvent);
+        } catch (err) {
+          console.warn('SSE Parse error:', err);
+        }
+      };
+
+      eventSource.onerror = () => {
+        // SSE gracefully closes or reconnects silently
+        eventSource?.close();
+      };
+    } catch {
+      // Offline fallback
+    }
 
     return () => {
-      eventSource.close();
+      window.removeEventListener('clinos_stream_event', handleLocalEvent);
+      if (eventSource) {
+        eventSource.close();
+      }
     };
   }, [id, startTime]);
 
